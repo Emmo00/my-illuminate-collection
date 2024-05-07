@@ -13,4 +13,5 @@ composer dump-autoload
 ./vendor/bin/phpunit tests
 ```
 
-[] Implementing unittests in PHP
+- [ ] Implemented unittests with PHPUnit
+- [ ] Implemented unittests with Pest
