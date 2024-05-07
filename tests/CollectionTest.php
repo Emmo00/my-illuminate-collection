@@ -81,4 +81,121 @@ class CollectionTest extends TestCase
         $copy = $collection->collect();
         $this->assertEquals($collection->all(), $copy->all());
     }
+
+    public function testCombine()
+    {
+        $combined = collect(['name', 'age'])->combine(['George', 29]);
+        $this->assertEquals($combined->all(), [
+            'name' => 'George',
+            'age' => 29
+        ]);
+    }
+
+    public function testConcat()
+    {
+        $collection = collect(['John Doe']);
+
+        $concatenated = $collection->concat(['Jane Doe'])->concat(['name' => 'Johnny Doe']);
+
+        $this->assertEquals($concatenated->all(), ['John Doe', 'Jane Doe', 'Johnny Doe']);
+    }
+
+    public function testContains()
+    {
+        $col = collect([1, 2, 3, 4, 5]);
+        $this->assertFalse($col->contains(function (int $value, int $key) {
+            return $value > 5;
+        }));
+        $this->assertTrue($col->contains(function (int $value, int $key) {
+            return $value < 5;
+        }));
+
+        $col = collect(['name' => 'Desk', 'price' => 100]);
+        $this->assertTrue($col->contains('Desk'));
+        $this->assertFalse($col->contains('New York'));
+
+        $col = collect([
+            ['product' => 'Desk', 'price' => 200],
+            ['product' => 'Chair', 'price' => 100],
+        ]);
+        $this->assertFalse($col->contains('product', 'Bookcase'));
+        $this->assertTrue($col->contains('product', 'Chair'));
+    }
+
+    public function testContainsStrict()
+    {
+        $col = collect([1, 2, 3, 4, 5]);
+        $this->assertFalse($col->containsStrict(function (int $value, int $key) {
+            return $value > 5;
+        }));
+        $this->assertTrue($col->containsStrict(function (int $value, int $key) {
+            return $value < 5;
+        }));
+
+        $col = collect(['name' => 'Desk', 'price' => 100]);
+        $this->assertFalse($col->containsStrict('100'));
+        $this->assertTrue($col->containsStrict(100));
+
+        $col = collect([
+            ['product' => 'Desk', 'price' => 200],
+            ['product' => 'Chair', 'price' => 100],
+        ]);
+        $this->assertFalse($col->containsStrict('price', '200'));
+        $this->assertTrue($col->containsStrict('price', 100));
+    }
+    public function testDoesntContain()
+    {
+        $col = collect([1, 2, 3, 4, 5]);
+        $this->assertTrue($col->doesntContain(function (int $value, int $key) {
+            return $value > 5;
+        }));
+        $this->assertFalse($col->doesntContain(function (int $value, int $key) {
+            return $value < 5;
+        }));
+
+        $col = collect(['name' => 'Desk', 'price' => 100]);
+        $this->assertFalse($col->doesntContain('Desk'));
+        $this->assertTrue($col->doesntContain('New York'));
+
+        $col = collect([
+            ['product' => 'Desk', 'price' => 200],
+            ['product' => 'Chair', 'price' => 100],
+        ]);
+        $this->assertTrue($col->doesntContain('product', 'Bookcase'));
+        $this->assertFalse($col->doesntContain('product', 'Chair'));
+    }
+
+    public function testContainsOneItem()
+    {
+        $this->assertFalse(collect([])->containsOneItem());
+
+        $this->assertTrue(collect(['1'])->containsOneItem());
+
+        $this->assertFalse(collect(['1', '2'])->containsOneItem());
+    }
+
+    public function testCount()
+    {
+        $collection = collect([1, 2, 3, 4]);
+
+        $this->assertEquals($collection->count(), 4);
+    }
+
+    public function testCountBy()
+    {
+        $collection = collect([1, 2, 2, 2, 3]);
+        $this->assertEquals($collection->countBy()->all(), [
+            1 => 1,
+            2 => 3,
+            3 => 1,
+        ]);
+
+        $collection = collect(['alice@gmail.com', 'bob@yahoo.com', 'carlos@gmail.com']);
+        $this->assertEquals($collection->countBy(function (string $email) {
+            return substr(strrchr($email, '@'), 1);
+        })->all(), [
+            'gmail.com' => 2,
+            'yahoo.com' => 1
+        ]);
+    }
 }

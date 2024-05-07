@@ -84,4 +84,117 @@ class Collection
     {
         return new self($this->_data);
     }
+
+    public function combine(array $arr)
+    {
+        if (count($this->_data) !== count($arr)) {
+            throw new Error("Number of items in arrays are not equal");
+        }
+        $aggregate = [];
+        foreach ($this->_data as $key => $value) {
+            $aggregate[$value] = $arr[$key];
+        }
+        return new self($aggregate);
+    }
+
+    public function concat(array $arr)
+    {
+        $aggregate = $this->_data;
+
+        foreach ($arr as $value) {
+            $aggregate[] = $value;
+        }
+        return new self($aggregate);
+    }
+
+    public function contains(...$needle)
+    {
+        $arr_len = count($needle);
+        if ($arr_len > 2 || $arr_len < 1) {
+            throw new Error("Collection::contains expects 1 or 2 arguments");
+        }
+        if ($arr_len === 2) {
+            $key = $needle[0];
+            $value = $needle[1];
+            foreach ($this->_data as $v) {
+                if (isset($v[$key]) && $v[$key] == $value)
+                    return true;
+            }
+        }
+
+        if (is_callable($needle[0])) {
+            foreach ($this->_data as $key => $value) {
+                if ($needle[0]($value, $key)) {
+                    return true;
+                }
+            }
+        } else {
+            foreach ($this->_data as $value) {
+                if ($needle[0] == $value) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function containsStrict(...$needle)
+    {
+        $arr_len = count($needle);
+        if ($arr_len > 2 || $arr_len < 1) {
+            throw new Error("Collection::contains expects 1 or 2 arguments");
+        }
+        if ($arr_len === 2) {
+            $key = $needle[0];
+            $value = $needle[1];
+            foreach ($this->_data as $v) {
+                if (isset($v[$key]) && $v[$key] === $value)
+                    return true;
+            }
+        }
+        if (is_callable($needle[0])) {
+            foreach ($this->_data as $key => $value) {
+                if ($needle[0]($value, $key)) {
+                    return true;
+                }
+            }
+        } else {
+            foreach ($this->_data as $value) {
+                if ($needle[0] === $value) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function doesntContain(...$needle)
+    {
+        return !$this->contains(...$needle);
+    }
+
+    public function containsOneItem()
+    {
+        return count($this->_data) === 1;
+    }
+
+    public function count()
+    {
+        return count($this->_data);
+    }
+
+    public function countBy($closure = null)
+    {
+        $aggregate = [];
+
+        foreach ($this->_data as $item) {
+            if (is_callable($closure))
+                $item = $closure($item);
+            if (isset($aggregate[$item]))
+                $aggregate[$item]++;
+            else
+                $aggregate[$item] = 1;
+        }
+        return new self($aggregate);
+    }
 }
