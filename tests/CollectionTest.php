@@ -198,4 +198,73 @@ class CollectionTest extends TestCase
             'yahoo.com' => 1
         ]);
     }
+
+    public function testDiff()
+    {
+        $col = collect([1, 2, 3, 4, 5]);
+        $this->assertEquals($col->diff([2, 4, 6, 8])->all(), [1, 3, 5]);
+    }
+
+    public function testDiffAssoc()
+    {
+        $col = collect([
+            'color' => 'orange',
+            'type' => 'fruit',
+            'remain' => 6,
+        ]);
+        $diff = $col->diffAssoc([
+            'color' => 'yellow',
+            'type' => 'fruit',
+            'remain' => 3,
+            'used' => 6
+        ]);
+
+        $this->assertEquals($diff->all(), [
+            'color' => 'orange',
+            'remain' => 6
+        ]);
+    }
+
+    public function testDiffAssocUsing()
+    {
+        $col = collect([
+            'color' => 'orange',
+            'type' => 'fruit',
+            'remain' => 6,
+        ]);
+
+        $diff = $col->diffAssocUsing([
+            'Color' => 'yellow',
+            'Type' => 'fruit',
+            'Remain' => 3,
+        ], 'strnatcasecmp');
+
+        $this->assertEquals($diff->all(), [
+            'color' => 'orange',
+            'remain' => 6
+        ]);
+    }
+
+    public function testDiffKeys()
+    {
+        $col = collect([
+            'one' => 10,
+            'two' => 20,
+            'three' => 30,
+            'four' => 40,
+            'five' => 50,
+        ]);
+
+        $diff = $col->diffKeys([
+            'two' => 2,
+            'four' => 4,
+            'six' => 6,
+            'eight' => 8,
+        ]);
+        $this->assertEquals($diff->all(), [
+            'one' => 10,
+            'three' => 30,
+            'five' => 50
+        ]);
+    }
 }

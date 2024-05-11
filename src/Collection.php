@@ -187,8 +187,10 @@ class Collection
     {
         $aggregate = [];
 
+        $closure_passed = is_callable($closure);
+
         foreach ($this->_data as $item) {
-            if (is_callable($closure))
+            if ($closure_passed)
                 $item = $closure($item);
             if (isset($aggregate[$item]))
                 $aggregate[$item]++;
@@ -196,5 +198,40 @@ class Collection
                 $aggregate[$item] = 1;
         }
         return new self($aggregate);
+    }
+
+    public function dd()
+    {
+        var_dump($this->_data);
+        die();
+    }
+
+    public function diff($arr)
+    {
+        $aggregate = [];
+        $diff = array_diff($this->_data, $arr);
+        foreach ($diff as $item)
+            $aggregate[] = $item;
+        return new self($aggregate);
+    }
+
+    public function diffAssoc($arr)
+    {
+        return new self(array_diff_assoc($this->_data, $arr));
+    }
+
+    public function diffAssocUsing($arr, $callback)
+    {
+        return new self(array_diff_uassoc($this->_data, $arr, $callback));
+    }
+
+    public function diffKeys($arr)
+    {
+        return new self(array_diff_key($this->_data, $arr));
+    }
+
+    public function dot()
+    {
+
     }
 }
