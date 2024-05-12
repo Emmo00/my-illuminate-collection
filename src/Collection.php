@@ -235,18 +235,24 @@ class Collection
         $go_deeper = false;
         $aggregate = [];
 
-        foreach($this->_data as $key => $value) {
-            if(is_array($value)) {
+        foreach ($this->_data as $key => $value) {
+            if (is_array($value)) {
                 $go_deeper = true;
-                foreach($value as $k => $v) {
-                    $aggregate[$key.'.'.$k] = $v;
+                foreach ($value as $k => $v) {
+                    $aggregate[$key . '.' . $k] = $v;
                 }
             } else {
                 $aggregate[$key] = $value;
             }
         }
 
-        if ($go_deeper) return (new self($aggregate))->dot();
+        if ($go_deeper)
+            return (new self($aggregate))->dot();
         return new self($aggregate);
+    }
+
+    public function dump()
+    {
+        var_dump($this->_data);
     }
 }
