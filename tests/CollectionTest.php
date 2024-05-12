@@ -267,4 +267,14 @@ class CollectionTest extends TestCase
             'five' => 50
         ]);
     }
+
+    public function testDot()
+    {
+        $col = collect(['products' => ['desk' => ['price' => 100]]]);
+
+        $this->assertEquals($col->dot()->all(), ['products.desk.price' => 100]);
+
+        $col = collect(['products' => ['desk' => ['price' => [1, 2]]]]);
+        $this->assertEquals($col->dot()->all(), ['products.desk.price.0' => 1, 'products.desk.price.1' => 2]);
+    }
 }
