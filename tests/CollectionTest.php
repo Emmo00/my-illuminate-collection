@@ -277,4 +277,17 @@ class CollectionTest extends TestCase
         $col = collect(['products' => ['desk' => ['price' => [1, 2]]]]);
         $this->assertEquals($col->dot()->all(), ['products.desk.price.0' => 1, 'products.desk.price.1' => 2]);
     }
+
+    public function testDuplicates()
+    {
+        $col = collect(['a', 'b', 'a', 'c', 'b']);
+        // $this->assertEquals($col->duplicates(), [2 => 'a', 4 => 'b']);
+
+        $employees = collect([
+            ['email' => 'a@g.com', 'position' => 'Developer'],
+            ['email' => 'j@g.com', 'position' => 'Designer'],
+            ['email' => 'v@g.com', 'position' => 'Developer']
+        ]);
+        $this->assertEquals($employees->duplicates('position'), [2 => 'Developer']);
+    }
 }

@@ -255,4 +255,45 @@ class Collection
     {
         var_dump($this->_data);
     }
+
+    public function duplicates($attribute = null, $strict = false)
+    {
+        $seen = [];
+        $duplicates = [];
+
+        foreach ($this->_data as $key => $value) {
+            if ($attribute) {
+                if (array_key_exists($attribute, $value)) {
+                    if (in_array($value[$attribute], $seen, $strict)) {
+                        $duplicates[$key] = $value[$attribute];
+                    }
+                    $seen[] = $value[$attribute];
+                }
+            } else {
+                if (in_array($value, $seen, $strict))
+                    $duplicates[$key] = $value;
+                $seen[$key] = $value;
+            }
+        }
+        return $duplicates;
+    }
+
+    public function duplicatesStrict($attribute = null)
+    {
+        return $this->duplicates($attribute, true);
+    }
+
+    public function each($closure)
+    {
+        foreach ($this->_data as $key => $value)
+            if ($closure($value, $key) === false)
+                return;
+    }
+
+    public function eachSpread($closure)
+    {
+        foreach ($this->_data as $key => $value)
+            if ($closure(...$value) === false)
+                return;
+    }
 }
